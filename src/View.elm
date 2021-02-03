@@ -2,13 +2,11 @@ module View exposing (..)
 
 import String
 import Html exposing (Html, button, div, text, h2, a, img, span, strong, h1, p, h3, input, label, select, option)
-import Html.Attributes exposing (style, disabled, href, src, target, type_, placeholder, value, autofocus)
+import Html.Attributes exposing (class, style, disabled, href, src, target, type_, placeholder, value, autofocus)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed
-import Html.CssHelpers
 import Model exposing (Model, Project)
 import Update exposing (Msg(..))
-import Styles exposing (..)
 
 
 view : Model -> Html Msg
@@ -21,20 +19,16 @@ view model =
             model.page * model.pageSize + model.pageSize >= List.length model.projects
     in
         div
-            [ class [ Container ]
-            ]
+            [ class "builtwithelm-Container" ]
             [ viewSidebar model
             , div
-                [ class [ Content ]
-                ]
+                [ class "builtwithelm-Content" ]
                 [ Html.Keyed.node "div"
-                    [ class [ ListContainer ]
-                    ]
+                    [ class "builtwithelm-ListContainer" ]
                   <|
                     viewList model
                 , div
-                    [ class [ Paging ]
-                    ]
+                    [ class "builtwithelm-Paging" ]
                     [ viewPageSizeSelect SetPageSize model.pageSize [ 5, 25, 50, 100 ]
                     , viewPageButton Prev disablePrev "Newer"
                     , viewPageButton Next disableNext "Older"
@@ -55,7 +49,7 @@ viewPageButton msg isDisabled label =
         button
             [ onClick msg
             , disabled isDisabled
-            , class [ Button ]
+            , class "builtwithelm-Button"
             ]
             [ text label ]
 
@@ -67,7 +61,7 @@ viewPageSizeSelect msg current options =
             option [ value <| toString i ]
                 [ text <| toString i ]
     in
-        div [ class [ Dropdown ] ]
+        div [ class "builtwithelm-Dropdown" ]
             [ label []
                 [ text "Page size" ]
             , select [ value <| toString current, onInput msg ]
@@ -100,11 +94,11 @@ viewOpenSourceLink project =
             a
                 [ href url
                 , target "_blank"
-                , class [ Link ]
+                , class "builtwithelm-Link"
                 ]
                 [ img
                     [ src "assets/github.svg"
-                    , class [ GithubLogo ]
+                    , class "builtwithelm-GithubLogo"
                     ]
                     []
                 ]
@@ -116,15 +110,13 @@ viewOpenSourceLink project =
 viewProject : Project -> Html Msg
 viewProject project =
     div
-        [ class [ Styles.Project ]
-        ]
+        [ class "builtwithelm-Styles.Project" ]
         [ div
-            [ class [ ProjectHeader ]
-            ]
+            [ class "builtwithelm-ProjectHeader" ]
             [ a
                 [ href project.primaryUrl
                 , target "_blank"
-                , class [ Link ]
+                , class "builtwithelm-Link"
                 ]
                 [ h2 []
                     [ text project.name ]
@@ -133,11 +125,10 @@ viewProject project =
             ]
         , p [] [ text project.description ]
         , div
-            [ class [ ProjectScreenshotShell ]
-            ]
+            [ class "builtwithelm-ProjectScreenshotShell" ]
             [ img
                 [ src project.previewImageUrl
-                , class [ ProjectImage ]
+                , class "builtwithelm-ProjectImage"
                 ]
                 []
             ]
@@ -146,42 +137,39 @@ viewProject project =
 
 viewSidebar : Model -> Html Msg
 viewSidebar model =
-    div [ class [ Sidebar ] ]
-        [ div [ class [ SidebarHeader ] ]
+    div [ class "builtwithelm-Sidebar" ]
+        [ div [ class "builtwithelm-SidebarHeader" ]
             [ div
-                [ class [ SidebarLogoContainer ]
-                ]
+                [ class "builtwithelm-SidebarLogoContainer" ]
                 [ a [ href "/" ]
-                    [ img [ src "assets/logo.svg", class [ Logo ] ] [] ]
+                    [ img [ src "assets/logo.svg", class "builtwithelm-Logo" ] [] ]
                 ]
             , h1 []
                 [ a
                     [ href "/"
-                    , class [ BuiltWithLink ]
+                    , class "builtwithelm-BuiltWithLink"
                     ]
                     [ span
-                        [ class [ BuiltWithText ]
-                        ]
+                        [ class "builtwithelm-BuiltWithText" ]
                         [ text "builtwith" ]
                     , span [] [ text "elm" ]
                     ]
                 ]
             ]
-        , div [ class [ SearchContainer ] ]
+        , div [ class "builtwithelm-SearchContainer" ]
             [ input
                 [ type_ "text"
                 , placeholder "Search"
                 , value model.searchQuery
                 , autofocus True
                 , onInput UpdateSearchQuery
-                , class [ SearchInput ]
+                , class "builtwithelm-SearchInput"
                 ]
                 []
             ]
-        , div [ class [ SubmitProject ] ]
+        , div [ class "builtwithelm-SubmitProject" ]
             [ h3
-                [ class [ SubmitProjectHeader ]
-                ]
+                [ class "builtwithelm-SubmitProjectHeader" ]
                 [ text "Submit a project" ]
             , p []
                 [ span [] [ text "Submit a pull request or post an issue to " ]
@@ -192,15 +180,10 @@ viewSidebar model =
                 ]
             ]
         , div
-            [ class [ BuiltBy ]
-            ]
+            [ class "builtwithelm-BuiltBy" ]
             [ span [] [ text "Built by " ]
             , a [ href "https://github.com/lukewestby", target "_blank" ] [ text "Luke Westby" ]
             , span [] [ text " and " ]
             , a [ href "https://github.com/elm-community/builtwithelm/graphs/contributors", target "_blank" ] [ text "the amazing Elm community." ]
             ]
         ]
-
-
-{ class } =
-    Html.CssHelpers.withNamespace builtWithElmNamespace
