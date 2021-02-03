@@ -5,10 +5,8 @@
   "main": "build/main.js",
   "dependencies": {
     "elm": "^0.18.0",
-    "elm-css": "^0.6.0",
-    "uglifyjs": "^2.4.10"
+    "elm-css": "^0.6.0"
   },
-  "devDependencies": {},
   "scripts": {
     "build": "bash build.sh"
   },
