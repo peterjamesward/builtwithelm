@@ -1,18 +1,9 @@
-module Main exposing (..)
-
-import Model exposing (Model)
-import Navigation
-import Query exposing (parsePage)
-import Update exposing (Msg(NewPage), update, init)
-import View exposing (view)
+module Main exposing (main)
 
 
-main : Program Never Model Msg
+import Html exposing (Html, text)
+
+
+main : Html msg
 main =
-    Navigation.program
-        (NewPage << parsePage)
-        { init = init << parsePage
-        , view = view
-        , update = update
-        , subscriptions = always Sub.none
-        }
+  text "Hello, world!"

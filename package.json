@@ -4,10 +4,10 @@
   "description": "A list of projects and apps built with Elm.",
   "main": "build/main.js",
   "dependencies": {
-    "elm": "^0.18.0"
+    "elm": "^0.19.1-5"
   },
   "scripts": {
-    "build": "bash build.sh"
+    "build": "./build.sh"
   },
   "repository": {
     "type": "git",

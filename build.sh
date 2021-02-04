@@ -1,2 +1,3 @@
-#!/bin/bash
-elm-make src/Main.elm --output build/main.js
+#!/bin/sh
+
+elm make src/Main.elm --debug --output build/main.js
