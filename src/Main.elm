@@ -1,14 +1,20 @@
 module Main exposing (main)
 
 
+import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
 
 
-main : Html msg
+main : Program () Model msg
 main =
-  view initModel
+  Browser.element
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = always Sub.none
+    }
 
 
 -- MODEL
@@ -33,15 +39,17 @@ type alias Project =
     }
 
 
-initModel : Model
-initModel =
-  { projects = initProjects
-  , isLoading = False
-  , loadFailed = False
-  , page = 0
-  , pageSize = 5
-  , searchQuery = ""
-  }
+init : flags -> (Model, Cmd msg)
+init _ =
+  ( { projects = initProjects
+    , isLoading = False
+    , loadFailed = False
+    , page = 0
+    , pageSize = 5
+    , searchQuery = ""
+    }
+  , Cmd.none
+  )
 
 
 initProjects : List Project
@@ -113,6 +121,16 @@ initProjects =
     , repositoryUrl = Nothing
     }
   ]
+
+
+-- UPDATE
+
+
+update : msg -> Model -> (Model, Cmd msg)
+update _ model =
+  ( model
+  , Cmd.none
+  )
 
 
 -- VIEW
