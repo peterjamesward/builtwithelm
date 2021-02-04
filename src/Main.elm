@@ -1,14 +1,16 @@
 module Main exposing (main)
 
 
+import Api
 import Browser
 import Data exposing (Project)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
+import Http
 
 
-main : Program () Model msg
+main : Program () Model Msg
 main =
   Browser.element
     { init = init
@@ -31,27 +33,46 @@ type alias Model =
   }
 
 
-init : flags -> (Model, Cmd msg)
+init : flags -> (Model, Cmd Msg)
 init _ =
-  ( { projects = Data.projects
-    , isLoading = False
+  ( { projects = []
+    , isLoading = True
     , loadFailed = False
     , page = 0
     , pageSize = 5
     , searchQuery = ""
     }
-  , Cmd.none
+  , Api.fetchProjects GotProjects
   )
 
 
 -- UPDATE
 
 
-update : msg -> Model -> (Model, Cmd msg)
-update _ model =
-  ( model
-  , Cmd.none
-  )
+type Msg
+  = GotProjects (Result Http.Error (List Project))
+
+
+update : Msg -> Model -> (Model, Cmd msg)
+update msg model =
+  case msg of
+    GotProjects (Ok projects) ->
+      ( { model
+        | projects = projects
+        , isLoading = False
+        , loadFailed = False
+        }
+      , Cmd.none
+      )
+
+    GotProjects (Err _) ->
+      ( { model
+        | projects = []
+        , isLoading = False
+        , loadFailed = True
+        }
+      , Cmd.none
+      )
 
 
 -- VIEW
