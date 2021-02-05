@@ -4,13 +4,14 @@ module Main exposing (main)
 import Api
 import Browser
 import Browser.Dom as Dom
-import Data exposing (Project)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as E
 import Html.Keyed
 import Http
 import Pager exposing (Pager)
+import Project exposing (Project)
+import RemoteData exposing (RemoteData(..))
 import Task
 
 
@@ -28,20 +29,16 @@ main =
 
 
 type alias Model =
-  { pager : Pager Project
+  { remoteData : RemoteData (Pager Project)
   , pageSize : Int
-  , isLoading : Bool
-  , loadFailed : Bool
   , query : String
   }
 
 
 init : flags -> (Model, Cmd Msg)
 init _ =
-  ( { pager = Pager.empty
+  ( { remoteData = Loading
     , pageSize = 5
-    , isLoading = True
-    , loadFailed = False
     , query = ""
     }
   , Api.fetchProjects GotProjects
@@ -64,12 +61,12 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     PressedPrev ->
-      ( { model | pager = Pager.prev model.pager }
+      ( { model | remoteData = RemoteData.map Pager.prev model.remoteData }
       , scrollToTop
       )
 
     PressedNext ->
-      ( { model | pager = Pager.next model.pager }
+      ( { model | remoteData = RemoteData.map Pager.next model.remoteData }
       , scrollToTop
       )
 
@@ -80,7 +77,7 @@ update msg model =
 
     EnteredQuery query ->
       ( { model
-        | pager = Pager.searchFor query model.pager
+        | remoteData = RemoteData.map (Pager.searchFor query) model.remoteData
         , query = query
         }
       , scrollToTop
@@ -92,29 +89,22 @@ update msg model =
             String.toInt pageSizeString
               |> Maybe.withDefault 5
 
-          pager =
-            model.pager
-              |> Pager.withPerPage pageSize
+          remoteData =
+            RemoteData.map (Pager.withPerPage pageSize) model.remoteData
         in
-        { model | pager = pager, pageSize = pageSize }
+        { model | remoteData = remoteData, pageSize = pageSize }
       , Cmd.none
       )
 
     GotProjects (Ok projects) ->
       ( { model
-        | pager = Pager.fromList model.pageSize .name projects
-        , isLoading = False
-        , loadFailed = False
+        | remoteData = Success (Pager.fromList model.pageSize .name projects)
         }
       , Cmd.none
       )
 
     GotProjects (Err _) ->
-      ( { model
-        | pager = Pager.empty
-        , isLoading = False
-        , loadFailed = True
-        }
+      ( { model | remoteData = Failure }
       , Cmd.none
       )
 
@@ -129,37 +119,61 @@ scrollToTop =
 
 view : Model -> Html Msg
 view model =
-  let
-    page =
-      Pager.currentPage model.pager
-
-    disablePrev =
-      not page.hasPrev
-
-    disableNext =
-      not page.hasNext
-  in
-  div
-    [ class "builtwithelm-Container" ]
-    [ viewSidebar model
-    , div
-        [ class "builtwithelm-Content" ]
-        [ Html.Keyed.node "div"
-            [ class "builtwithelm-ListContainer" ]
-          <|
-            viewProjects model.isLoading model.loadFailed page.data
+  case model.remoteData of
+    Loading ->
+      div
+        [ class "builtwithelm-Container" ]
+        [ viewSidebar model.query
         , div
-            [ class "builtwithelm-Paging" ]
-            [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
-            , viewPageButton PressedPrev disablePrev "Newer"
-            , viewPageButton PressedNext disableNext "Older"
+            [ class "builtwithelm-Content" ]
+            [ div [ class "builtwithelm-ListContainer" ]
+                [ text "Loading..." ]
             ]
         ]
-    ]
+
+    Failure ->
+      div
+        [ class "builtwithelm-Container" ]
+        [ viewSidebar model.query
+        , div
+            [ class "builtwithelm-Content" ]
+            [ div [ class "builtwithelm-ListContainer" ]
+                [ text "Unable to load projects" ]
+            ]
+        ]
+
+    Success pager ->
+      let
+        page =
+          Pager.currentPage pager
+
+        disablePrev =
+          not page.hasPrev
+
+        disableNext =
+          not page.hasNext
+      in
+      div
+        [ class "builtwithelm-Container" ]
+        [ viewSidebar model.query
+        , div
+            [ class "builtwithelm-Content" ]
+            [ Html.Keyed.node
+                "div"
+                [ class "builtwithelm-ListContainer" ]
+                (viewProjects page.data)
+            , div
+                [ class "builtwithelm-Paging" ]
+                [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
+                , viewPageButton PressedPrev disablePrev "Newer"
+                , viewPageButton PressedNext disableNext "Older"
+                ]
+            ]
+        ]
 
 
-viewSidebar : Model -> Html Msg
-viewSidebar model =
+viewSidebar : String -> Html Msg
+viewSidebar query =
   div [ class "builtwithelm-Sidebar" ]
     [ div [ class "builtwithelm-SidebarHeader" ]
         [ div
@@ -183,7 +197,7 @@ viewSidebar model =
         [ input
             [ type_ "text"
             , placeholder "Search"
-            , value model.query
+            , value query
             , autofocus True
             , E.onInput EnteredQuery
             , class "builtwithelm-SearchInput"
@@ -212,14 +226,9 @@ viewSidebar model =
     ]
 
 
-viewProjects : Bool -> Bool -> List Project -> List (String, Html msg)
-viewProjects isLoading loadFailed projects =
-  if isLoading then
-    [ ( "", h2 [] [ text "Loading" ] ) ]
-  else if loadFailed then
-    [ ( "", h2 [] [ text "Unable to load projects" ] ) ]
-  else
-    List.map (\p -> (p.primaryUrl, viewProject p)) projects
+viewProjects : List Project -> List (String, Html msg)
+viewProjects projects =
+  List.map (\p -> (p.primaryUrl, viewProject p)) projects
 
 
 viewProject : Project -> Html msg

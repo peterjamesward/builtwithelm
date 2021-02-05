@@ -1,6 +1,6 @@
 module Pager exposing
   ( Pager
-  , empty, fromList
+  , fromList
   , withPerPage
   , searchFor
   , prev, next
@@ -32,11 +32,6 @@ type alias Page a =
   , hasPrev : Bool
   , hasNext : Bool
   }
-
-
-empty : Pager a
-empty =
-  fromList 1 (always "") []
 
 
 fromList : Int -> (a -> String) -> List a -> Pager a

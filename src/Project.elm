@@ -1,4 +1,4 @@
-module Data exposing (Project)
+module Project exposing (Project)
 
 
 type alias Project =

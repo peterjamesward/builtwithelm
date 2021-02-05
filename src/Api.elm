@@ -1,9 +1,9 @@
 module Api exposing (fetchProjects)
 
 
-import Data exposing (Project)
 import Http
 import Json.Decode as D exposing (Decoder)
+import Project exposing (Project)
 
 
 fetchProjects : (Result Http.Error (List Project) -> msg) -> Cmd msg
