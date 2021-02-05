@@ -6,6 +6,7 @@ import Browser
 import Data exposing (Project)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events as E
 import Html.Keyed
 import Http
 import Pager exposing (Pager)
@@ -49,12 +50,24 @@ init _ =
 
 
 type Msg
-  = GotProjects (Result Http.Error (List Project))
+  = PressedPrev
+  | PressedNext
+  | GotProjects (Result Http.Error (List Project))
 
 
 update : Msg -> Model -> (Model, Cmd msg)
 update msg model =
   case msg of
+    PressedPrev ->
+      ( { model | pager = Pager.prev model.pager }
+      , Cmd.none
+      )
+
+    PressedNext ->
+      ( { model | pager = Pager.next model.pager }
+      , Cmd.none
+      )
+
     GotProjects (Ok projects) ->
       ( { model
         | pager = Pager.fromList model.pageSize projects
@@ -77,7 +90,7 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
   let
     disablePrev =
@@ -98,8 +111,8 @@ view model =
         , div
             [ class "builtwithelm-Paging" ]
             [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
-            , viewPageButton disablePrev "Newer"
-            , viewPageButton disableNext "Older"
+            , viewPageButton PressedPrev disablePrev "Newer"
+            , viewPageButton PressedNext disableNext "Older"
             ]
         ]
     ]
@@ -236,17 +249,17 @@ viewPageSizeSelect current options =
       ]
 
 
-viewPageButton : Bool -> String -> Html msg
-viewPageButton isDisabled label =
-  let
-    textColor =
-      if isDisabled then
-        "#e5e5e5"
-      else
-        "#5cb5cd"
-  in
+viewPageButton : Msg -> Bool -> String -> Html Msg
+viewPageButton onPress isDisabled label =
+  if isDisabled then
     button
-      [ disabled isDisabled
+      [ disabled True
+      , class "builtwithelm-Button"
+      ]
+      [ text label ]
+  else
+    button
+      [ E.onClick onPress
       , class "builtwithelm-Button"
       ]
       [ text label ]
