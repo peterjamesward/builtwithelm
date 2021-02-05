@@ -4,6 +4,7 @@ module Main exposing (main)
 import Api
 import Browser
 import Browser.Dom as Dom
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as E
@@ -13,15 +14,18 @@ import Pager exposing (Pager)
 import Project exposing (Project)
 import RemoteData exposing (RemoteData(..))
 import Task
+import Url exposing (Url)
 
 
 main : Program () Model Msg
 main =
-  Browser.element
+  Browser.application
     { init = init
     , view = view
     , update = update
     , subscriptions = always Sub.none
+    , onUrlRequest = ClickedLink
+    , onUrlChange = ChangedUrl
     }
 
 
@@ -29,15 +33,19 @@ main =
 
 
 type alias Model =
-  { remoteData : RemoteData (Pager Project)
+  { url : Url
+  , key : Nav.Key
+  , remoteData : RemoteData (Pager Project)
   , pageSize : Int
   , query : String
   }
 
 
-init : flags -> (Model, Cmd Msg)
-init _ =
-  ( { remoteData = Loading
+init : flags -> Url -> Nav.Key -> (Model, Cmd Msg)
+init _ url key =
+  ( { url = url
+    , key = key
+    , remoteData = Loading
     , pageSize = 5
     , query = ""
     }
@@ -49,7 +57,9 @@ init _ =
 
 
 type Msg
-  = PressedPrev
+  = ClickedLink Browser.UrlRequest
+  | ChangedUrl Url
+  | PressedPrev
   | PressedNext
   | ScrolledToTop
   | EnteredQuery String
@@ -60,6 +70,23 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    ClickedLink urlRequest ->
+      case urlRequest of
+        Browser.Internal url ->
+          ( model
+          , Nav.pushUrl model.key (Url.toString url)
+          )
+
+        Browser.External href ->
+          ( model
+          , Nav.load href
+          )
+
+    ChangedUrl url ->
+      ( { model | url = url }
+      , Cmd.none
+      )
+
     PressedPrev ->
       ( { model | remoteData = RemoteData.map Pager.prev model.remoteData }
       , scrollToTop
@@ -117,59 +144,63 @@ scrollToTop =
 -- VIEW
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-  case model.remoteData of
-    Loading ->
-      div
-        [ class "builtwithelm-Container" ]
-        [ viewSidebar model.query
-        , div
-            [ class "builtwithelm-Content" ]
-            [ div [ class "builtwithelm-ListContainer" ]
-                [ text "Loading..." ]
-            ]
-        ]
+  { title = "Built with Elm"
+  , body =
+      [ case model.remoteData of
+          Loading ->
+            div
+              [ class "builtwithelm-Container" ]
+              [ viewSidebar model.query
+              , div
+                  [ class "builtwithelm-Content" ]
+                  [ div [ class "builtwithelm-ListContainer" ]
+                      [ text "Loading..." ]
+                  ]
+              ]
 
-    Failure ->
-      div
-        [ class "builtwithelm-Container" ]
-        [ viewSidebar model.query
-        , div
-            [ class "builtwithelm-Content" ]
-            [ div [ class "builtwithelm-ListContainer" ]
-                [ text "Unable to load projects" ]
-            ]
-        ]
+          Failure ->
+            div
+              [ class "builtwithelm-Container" ]
+              [ viewSidebar model.query
+              , div
+                  [ class "builtwithelm-Content" ]
+                  [ div [ class "builtwithelm-ListContainer" ]
+                      [ text "Unable to load projects" ]
+                  ]
+              ]
 
-    Success pager ->
-      let
-        page =
-          Pager.currentPage pager
+          Success pager ->
+            let
+              page =
+                Pager.currentPage pager
 
-        disablePrev =
-          not page.hasPrev
+              disablePrev =
+                not page.hasPrev
 
-        disableNext =
-          not page.hasNext
-      in
-      div
-        [ class "builtwithelm-Container" ]
-        [ viewSidebar model.query
-        , div
-            [ class "builtwithelm-Content" ]
-            [ Html.Keyed.node
-                "div"
-                [ class "builtwithelm-ListContainer" ]
-                (viewProjects page.data)
-            , div
-                [ class "builtwithelm-Paging" ]
-                [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
-                , viewPageButton PressedPrev disablePrev "Newer"
-                , viewPageButton PressedNext disableNext "Older"
-                ]
-            ]
-        ]
+              disableNext =
+                not page.hasNext
+            in
+            div
+              [ class "builtwithelm-Container" ]
+              [ viewSidebar model.query
+              , div
+                  [ class "builtwithelm-Content" ]
+                  [ Html.Keyed.node
+                      "div"
+                      [ class "builtwithelm-ListContainer" ]
+                      (viewProjects page.data)
+                  , div
+                      [ class "builtwithelm-Paging" ]
+                      [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
+                      , viewPageButton PressedPrev disablePrev "Newer"
+                      , viewPageButton PressedNext disableNext "Older"
+                      ]
+                  ]
+              ]
+      ]
+  }
 
 
 viewSidebar : String -> Html Msg
