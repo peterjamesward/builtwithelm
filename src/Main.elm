@@ -3,6 +3,7 @@ module Main exposing (main)
 
 import Api
 import Browser
+import Browser.Dom as Dom
 import Data exposing (Project)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,6 +11,7 @@ import Html.Events as E
 import Html.Keyed
 import Http
 import Pager exposing (Pager)
+import Task
 
 
 main : Program () Model Msg
@@ -52,19 +54,25 @@ init _ =
 type Msg
   = PressedPrev
   | PressedNext
+  | ScrolledToTop
   | GotProjects (Result Http.Error (List Project))
 
 
-update : Msg -> Model -> (Model, Cmd msg)
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     PressedPrev ->
       ( { model | pager = Pager.prev model.pager }
-      , Cmd.none
+      , scrollToTop
       )
 
     PressedNext ->
       ( { model | pager = Pager.next model.pager }
+      , scrollToTop
+      )
+
+    ScrolledToTop ->
+      ( model
       , Cmd.none
       )
 
@@ -85,6 +93,11 @@ update msg model =
         }
       , Cmd.none
       )
+
+
+scrollToTop : Cmd Msg
+scrollToTop =
+  Task.perform (always ScrolledToTop) (Dom.setViewport 0 0)
 
 
 -- VIEW
