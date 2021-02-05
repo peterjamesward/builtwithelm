@@ -87,7 +87,7 @@ update msg model =
 
     GotProjects (Ok projects) ->
       ( { model
-        | pager = Pager.fromList .name model.pageSize projects
+        | pager = Pager.fromList model.pageSize .name projects
         , isLoading = False
         , loadFailed = False
         }
@@ -115,11 +115,14 @@ scrollToTop =
 view : Model -> Html Msg
 view model =
   let
+    page =
+      Pager.currentPage model.pager
+
     disablePrev =
-      not (Pager.hasPrev model.pager)
+      not page.hasPrev
 
     disableNext =
-      not (Pager.hasNext model.pager)
+      not page.hasNext
   in
   div
     [ class "builtwithelm-Container" ]
@@ -129,7 +132,7 @@ view model =
         [ Html.Keyed.node "div"
             [ class "builtwithelm-ListContainer" ]
           <|
-            viewList model
+            viewProjects model.isLoading model.loadFailed page.data
         , div
             [ class "builtwithelm-Paging" ]
             [ viewPageSizeSelect model.pageSize [ 5, 25, 50, 100 ]
@@ -194,16 +197,14 @@ viewSidebar model =
     ]
 
 
-viewList : Model -> List (String, Html msg)
-viewList model =
-  if model.isLoading then
+viewProjects : Bool -> Bool -> List Project -> List (String, Html msg)
+viewProjects isLoading loadFailed projects =
+  if isLoading then
     [ ( "", h2 [] [ text "Loading" ] ) ]
-  else if model.loadFailed then
+  else if loadFailed then
     [ ( "", h2 [] [ text "Unable to load projects" ] ) ]
   else
-    model.pager
-      |> Pager.currentPage
-      |> List.map (\p -> ( p.primaryUrl, viewProject p ))
+    List.map (\p -> (p.primaryUrl, viewProject p)) projects
 
 
 viewProject : Project -> Html msg
