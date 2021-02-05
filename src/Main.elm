@@ -8,6 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Keyed
 import Http
+import Pager exposing (Pager)
 
 
 main : Program () Model Msg
@@ -24,22 +25,20 @@ main =
 
 
 type alias Model =
-  { projects : List Project
+  { pager : Pager Project
+  , pageSize : Int
   , isLoading : Bool
   , loadFailed : Bool
-  , page : Int
-  , pageSize : Int
   , searchQuery : String
   }
 
 
 init : flags -> (Model, Cmd Msg)
 init _ =
-  ( { projects = []
+  ( { pager = Pager.empty
+    , pageSize = 5
     , isLoading = True
     , loadFailed = False
-    , page = 0
-    , pageSize = 5
     , searchQuery = ""
     }
   , Api.fetchProjects GotProjects
@@ -58,7 +57,7 @@ update msg model =
   case msg of
     GotProjects (Ok projects) ->
       ( { model
-        | projects = projects
+        | pager = Pager.fromList model.pageSize projects
         , isLoading = False
         , loadFailed = False
         }
@@ -67,7 +66,7 @@ update msg model =
 
     GotProjects (Err _) ->
       ( { model
-        | projects = []
+        | pager = Pager.empty
         , isLoading = False
         , loadFailed = True
         }
@@ -82,10 +81,10 @@ view : Model -> Html msg
 view model =
   let
     disablePrev =
-      model.page == 0
+      not (Pager.hasPrev model.pager)
 
     disableNext =
-      model.page * model.pageSize + model.pageSize >= List.length model.projects
+      not (Pager.hasNext model.pager)
   in
   div
     [ class "builtwithelm-Container" ]
@@ -162,20 +161,18 @@ viewSidebar model =
 
 viewList : Model -> List (String, Html msg)
 viewList model =
-  let
-    filterCriteria project =
-      String.contains (String.toLower model.searchQuery) (String.toLower project.name)
-  in
-    if model.isLoading then
-      [ ( "", h2 [] [ text "Loading" ] ) ]
-    else if model.loadFailed then
-      [ ( "", h2 [] [ text "Unable to load projects" ] ) ]
-    else
-      model.projects
-        |> List.filter filterCriteria
-        |> List.drop (model.page * model.pageSize)
-        |> List.take model.pageSize
-        |> List.map (\p -> ( p.primaryUrl, viewProject p ))
+  -- let
+  --   filterCriteria project =
+  --     String.contains (String.toLower model.searchQuery) (String.toLower project.name)
+  -- in
+  if model.isLoading then
+    [ ( "", h2 [] [ text "Loading" ] ) ]
+  else if model.loadFailed then
+    [ ( "", h2 [] [ text "Unable to load projects" ] ) ]
+  else
+    model.pager
+      |> Pager.toList
+      |> List.map (\p -> ( p.primaryUrl, viewProject p ))
 
 
 viewProject : Project -> Html msg
