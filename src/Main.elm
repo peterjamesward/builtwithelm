@@ -56,6 +56,7 @@ type Msg
   | PressedNext
   | ScrolledToTop
   | EnteredQuery String
+  | ChangedPageSize String
   | GotProjects (Result Http.Error (List Project))
 
 
@@ -83,6 +84,20 @@ update msg model =
         , query = query
         }
       , scrollToTop
+      )
+
+    ChangedPageSize pageSizeString ->
+      ( let
+          pageSize =
+            String.toInt pageSizeString
+              |> Maybe.withDefault 5
+
+          pager =
+            model.pager
+              |> Pager.withPerPage pageSize
+        in
+        { model | pager = pager, pageSize = pageSize }
+      , Cmd.none
       )
 
     GotProjects (Ok projects) ->
@@ -255,7 +270,7 @@ viewOpenSourceLink project =
       span [] []
 
 
-viewPageSizeSelect : Int -> List Int -> Html msg
+viewPageSizeSelect : Int -> List Int -> Html Msg
 viewPageSizeSelect current options =
   let
     toOption i =
@@ -263,7 +278,10 @@ viewPageSizeSelect current options =
   in
   div [ class "builtwithelm-Dropdown" ]
       [ label [] [ text "Page size" ]
-      , select [ value <| String.fromInt current ]
+      , select
+          [ value <| String.fromInt current
+          , E.onInput ChangedPageSize
+          ]
           (List.map toOption options)
       ]
 

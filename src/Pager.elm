@@ -1,6 +1,7 @@
 module Pager exposing
   ( Pager
   , empty, fromList
+  , withPerPage
   , searchFor
   , prev, next
 
@@ -42,12 +43,17 @@ fromList : Int -> (a -> String) -> List a -> Pager a
 fromList perPage toSearchTerm data =
   let
     settings =
-      Settings perPage toSearchTerm
+      Settings (clamp 1 100 perPage) toSearchTerm
 
     state =
       State data 1 ""
   in
   Pager settings state
+
+
+withPerPage : Int -> Pager a -> Pager a
+withPerPage perPage (Pager settings state) =
+  Pager { settings | perPage = (clamp 1 100 perPage) } state
 
 
 currentPage : Pager a -> Page a
