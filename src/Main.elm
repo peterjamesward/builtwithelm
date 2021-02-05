@@ -32,7 +32,7 @@ type alias Model =
   , pageSize : Int
   , isLoading : Bool
   , loadFailed : Bool
-  , searchQuery : String
+  , query : String
   }
 
 
@@ -42,7 +42,7 @@ init _ =
     , pageSize = 5
     , isLoading = True
     , loadFailed = False
-    , searchQuery = ""
+    , query = ""
     }
   , Api.fetchProjects GotProjects
   )
@@ -55,6 +55,7 @@ type Msg
   = PressedPrev
   | PressedNext
   | ScrolledToTop
+  | EnteredQuery String
   | GotProjects (Result Http.Error (List Project))
 
 
@@ -76,9 +77,17 @@ update msg model =
       , Cmd.none
       )
 
+    EnteredQuery query ->
+      ( { model
+        | pager = Pager.searchFor query model.pager
+        , query = query
+        }
+      , scrollToTop
+      )
+
     GotProjects (Ok projects) ->
       ( { model
-        | pager = Pager.fromList model.pageSize projects
+        | pager = Pager.fromList .name model.pageSize projects
         , isLoading = False
         , loadFailed = False
         }
@@ -131,7 +140,7 @@ view model =
     ]
 
 
-viewSidebar : Model -> Html msg
+viewSidebar : Model -> Html Msg
 viewSidebar model =
   div [ class "builtwithelm-Sidebar" ]
     [ div [ class "builtwithelm-SidebarHeader" ]
@@ -156,9 +165,9 @@ viewSidebar model =
         [ input
             [ type_ "text"
             , placeholder "Search"
-            , value model.searchQuery
+            , value model.query
             , autofocus True
-            -- , onInput UpdateSearchQuery
+            , E.onInput EnteredQuery
             , class "builtwithelm-SearchInput"
             ]
             []
@@ -187,17 +196,13 @@ viewSidebar model =
 
 viewList : Model -> List (String, Html msg)
 viewList model =
-  -- let
-  --   filterCriteria project =
-  --     String.contains (String.toLower model.searchQuery) (String.toLower project.name)
-  -- in
   if model.isLoading then
     [ ( "", h2 [] [ text "Loading" ] ) ]
   else if model.loadFailed then
     [ ( "", h2 [] [ text "Unable to load projects" ] ) ]
   else
     model.pager
-      |> Pager.toList
+      |> Pager.currentPage
       |> List.map (\p -> ( p.primaryUrl, viewProject p ))
 
 
