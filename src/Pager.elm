@@ -3,7 +3,7 @@ module Pager exposing
   , fromList
   , withPerPage
   , searchFor
-  , prev, next
+  , goto, prev, next
 
   , Page
   , currentPage
@@ -68,6 +68,11 @@ currentPage (Pager settings state) =
 searchFor : String -> Pager a -> Pager a
 searchFor query (Pager settings state) =
   Pager settings { state | query = query }
+
+
+goto : Int -> Pager a -> Pager a
+goto pageNumber (Pager settings state) =
+  Pager settings { state | pageNumber = max 1 pageNumber }
 
 
 prev : Pager a -> Pager a

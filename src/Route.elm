@@ -1,36 +1,36 @@
-module Route exposing (Route(..), Query, fromUrl)
+module Route exposing (Route(..), HomeParams, fromUrl)
 
 
 import Url
-import Url.Parser as P
-import Url.Parser.Query as Q
+import Url.Parser exposing (Parser, map, oneOf, parse, query)
+import Url.Parser.Query as Query
 
 
 type Route
-  = Home Query
+  = Home HomeParams
 
 
-type alias Query =
-  { search : Maybe String
-  , page : Maybe Int
+type alias HomeParams =
+  { query : Maybe String
+  , pageNumber : Maybe Int
   }
 
 
 fromUrl : Url.Url -> Maybe Route
 fromUrl url =
-  P.parse parser url
+  parse parser url
 
 
-parser : P.Parser (Route -> a) a
+parser : Parser (Route -> a) a
 parser =
-  P.oneOf
-    [ P.map Home (P.query query)
+  oneOf
+    [ map Home (query homeParams)
     ]
 
 
-query : Q.Parser Query
-query =
-  Q.map2
-    Query
-    (Q.string "q")
-    (Q.int "page")
+homeParams : Query.Parser HomeParams
+homeParams =
+  Query.map2
+    HomeParams
+    (Query.string "q")
+    (Query.int "page")
