@@ -29,6 +29,7 @@ type alias State a =
 
 type alias Page a =
   { data : List a
+  , pageNumber : Int
   , hasPrev : Bool
   , hasNext : Bool
   }
@@ -62,7 +63,7 @@ currentPage (Pager settings state) =
         |> List.drop ((pageNumber - 1) * settings.perPage)
         |> List.take settings.perPage
   in
-  Page data hasPrev hasNext
+  Page data pageNumber hasPrev hasNext
 
 
 searchFor : String -> Pager a -> Pager a

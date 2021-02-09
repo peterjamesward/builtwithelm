@@ -38,15 +38,15 @@ type Screen
 
 init : flags -> Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  fromUrl url
+  fromUrl url key
     |> Tuple.mapFirst (Model url key)
 
 
-fromUrl : Url -> (Screen, Cmd Msg)
-fromUrl url =
+fromUrl : Url -> Nav.Key -> (Screen, Cmd Msg)
+fromUrl url key =
   case Route.fromUrl url of
     Just (Route.Home query) ->
-      Screen.Home.init query
+      Screen.Home.init key query
         |> Tuple.mapBoth Home (Cmd.map HomeMsg)
 
     Nothing ->

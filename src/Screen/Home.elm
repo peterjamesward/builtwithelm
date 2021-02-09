@@ -3,6 +3,7 @@ module Screen.Home exposing (Model, init, Msg, update, view)
 
 import Api
 import Browser.Dom as Dom
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as E
@@ -19,16 +20,18 @@ import Task
 
 
 type alias Model =
-  { remoteData : RemoteData (Pager Project)
+  { key : Nav.Key
+  , remoteData : RemoteData (Pager Project)
   , pageSize : Int
   , query : String
   , pageNumber : Int
   }
 
 
-init : Route.HomeParams -> (Model, Cmd Msg)
-init homeParams =
-  ( { remoteData = Loading
+init : Nav.Key -> Route.HomeParams -> (Model, Cmd Msg)
+init key homeParams =
+  ( { key = key
+    , remoteData = Loading
     , pageSize = 5
     , query = Maybe.withDefault "" homeParams.query
     , pageNumber = Maybe.withDefault 1 homeParams.pageNumber
@@ -53,13 +56,29 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     PressedPrev ->
-      ( { model | remoteData = RemoteData.map Pager.prev model.remoteData }
-      , scrollToTop
+      let
+        remoteData =
+          RemoteData.map Pager.prev model.remoteData
+      in
+      ( { model | remoteData = remoteData }
+      , Cmd.batch
+          [ scrollToTop
+          , Nav.pushUrl model.key <|
+              homeHref model.query (currentPageNumber remoteData)
+          ]
       )
 
     PressedNext ->
-      ( { model | remoteData = RemoteData.map Pager.next model.remoteData }
-      , scrollToTop
+      let
+        remoteData =
+          RemoteData.map Pager.next model.remoteData
+      in
+      ( { model | remoteData = remoteData }
+      , Cmd.batch
+          [ scrollToTop
+          , Nav.pushUrl model.key <|
+              homeHref model.query (currentPageNumber remoteData)
+          ]
       )
 
     ScrolledToTop ->
@@ -68,11 +87,16 @@ update msg model =
       )
 
     EnteredQuery query ->
-      ( { model
-        | remoteData = RemoteData.map (Pager.searchFor query) model.remoteData
-        , query = query
-        }
-      , scrollToTop
+      let
+        remoteData =
+          RemoteData.map (Pager.searchFor query) model.remoteData
+      in
+      ( { model | remoteData = remoteData, query = query }
+      , Cmd.batch
+          [ scrollToTop
+          , Nav.pushUrl model.key <|
+              homeHref query (currentPageNumber remoteData)
+          ]
       )
 
     ChangedPageSize pageSizeString ->
@@ -108,6 +132,18 @@ update msg model =
 scrollToTop : Cmd Msg
 scrollToTop =
   Task.perform (always ScrolledToTop) (Dom.setViewport 0 0)
+
+
+homeHref : String -> Int -> String
+homeHref query pageNumber =
+  Route.href (Route.Home { query = Just query, pageNumber = Just pageNumber })
+
+
+currentPageNumber : RemoteData (Pager a) -> Int
+currentPageNumber remoteData =
+  remoteData
+    |> RemoteData.map (Pager.currentPage >> .pageNumber)
+    |> RemoteData.withDefault 1
 
 
 -- VIEW
