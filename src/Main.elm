@@ -88,12 +88,11 @@ update msg model =
       case model.screen of
         Home homeModel ->
           let
-            (newHomeModel, newHomeCmd) =
+            (screen, cmd) =
               Screen.Home.update homeMsg homeModel
+                |> Tuple.mapBoth Home (Cmd.map HomeMsg)
           in
-          ( { model | screen = Home newHomeModel }
-          , Cmd.map HomeMsg newHomeCmd
-          )
+          ({ model | screen = screen }, cmd)
 
         _ ->
           (model, Cmd.none)
