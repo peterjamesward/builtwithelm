@@ -1,4 +1,22 @@
 [
+  { "name": "League Tables",
+    "previewImageUrl": "data/images/league-tables.png",
+    "primaryUrl": "https://se-polo-2019.netlify.app/",
+    "repositoryUrl": "https://github.com/ceddlyburge/elm-league-tables-from-google-sheets",
+    "description": "Display a League Table, Fixtures / Results and Top Scorers from data entered in Google Sheets."
+  },
+  { "name": "CSV Batch Tagger",
+    "previewImageUrl": "data/images/csvbatchtagger.png",
+    "primaryUrl": "https://www.robingruenke.com/elm-csv-batch-tagger",
+    "repositoryUrl": "https://github.com/eimfach/elm-csv-batch-tagger-app",
+    "description": "Import CSV Files, instantly lookup rows by matching multiple column keywords (or Regex) and assign this data a category/tag. Download filtered or tagged data as separate CSV files."
+  },
+  { "name": "Seeds Game",
+    "previewImageUrl": "data/images/seeds.png",
+    "primaryUrl": "https://seedsgame.com",
+    "repositoryUrl": "https://github.com/andrewMacmurray/seeds-game",
+    "description": "Connect the seeds and save the world, a game inspired by Two Dots and Monumnent Valley."
+  },
   { "name": "Elmify - stats about your listening tastes",
     "previewImageUrl": "data/images/elmify.png",
     "primaryUrl": "https://elmify.netlify.app/",
