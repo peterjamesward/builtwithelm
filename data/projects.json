@@ -1,4 +1,10 @@
 [
+  { "name": "League Tables",
+    "previewImageUrl": "data/images/league-tables.png",
+    "primaryUrl": "https://se-polo-2019.netlify.app/",
+    "repositoryUrl": "https://github.com/ceddlyburge/elm-league-tables-from-google-sheets",
+    "description": "Display a League Table, Fixtures / Results and Top Scorers from data entered in Google Sheets."
+  },
   { "name": "CSV Batch Tagger",
     "previewImageUrl": "data/images/csvbatchtagger.png",
     "primaryUrl": "https://www.robingruenke.com/elm-csv-batch-tagger",
