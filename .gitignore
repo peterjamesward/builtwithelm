@@ -1,6 +1,3 @@
-node_modules
-elm-stuff/
 build/
-.DS_Store
-elm.js
-npm-debug.log
+elm-stuff/
+node_modules/
