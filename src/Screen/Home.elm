@@ -243,7 +243,7 @@ viewSidebar query =
             [ text "Submit a project" ]
         , p []
             [ span [] [ text "Submit a pull request or post an issue to " ]
-            , a [ href "https://github.com/elm-community/builtwithelm", target "_blank" ] [ text "the Github repo" ]
+            , a [ href "https://github.com/dwayne/builtwithelm", target "_blank" ] [ text "the Github repo" ]
             , span [] [ text ". Please include a screenshot and ensure it is " ]
             , strong [] [ text "1000px x 800px" ]
             , span [] [ text "." ]
@@ -252,9 +252,9 @@ viewSidebar query =
     , div
         [ class "builtwithelm-BuiltBy" ]
         [ span [] [ text "Built by " ]
-        , a [ href "https://github.com/lukewestby", target "_blank" ] [ text "Luke Westby" ]
+        , a [ href "https://github.com/dwayne", target "_blank" ] [ text "Dwayne Crooks" ]
         , span [] [ text " and " ]
-        , a [ href "https://github.com/elm-community/builtwithelm/graphs/contributors", target "_blank" ] [ text "the amazing Elm community." ]
+        , a [ href "https://github.com/dwayne/builtwithelm/graphs/contributors", target "_blank" ] [ text "the amazing Elm community." ]
         ]
     ]
 
