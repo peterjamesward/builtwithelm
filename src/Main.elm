@@ -45,8 +45,8 @@ init _ url key =
 fromUrl : Url -> Nav.Key -> (Screen, Cmd Msg)
 fromUrl url key =
   case Route.fromUrl url of
-    Just (Route.Home query) ->
-      Screen.Home.init key query
+    Just (Route.Home params) ->
+      Screen.Home.init key params
         |> Tuple.mapBoth Home (Cmd.map HomeMsg)
 
     Nothing ->
@@ -80,9 +80,34 @@ update msg model =
           )
 
     ChangedUrl url ->
-      ( { model | url = url }
-      , Cmd.none
-      )
+      case Route.fromUrl url of
+        Just (Route.Home params) ->
+          case model.screen of
+            Home homeModel ->
+              let
+                screen =
+                  homeModel
+                    |> Screen.Home.withParams params
+                    |> Home
+              in
+              ( { model | url = url, screen = screen }
+              , Cmd.none
+              )
+
+            _ ->
+              let
+                (screen, cmd) =
+                  Screen.Home.init model.key params
+                    |> Tuple.mapBoth Home (Cmd.map HomeMsg)
+              in
+              ( { model | url = url, screen = screen }
+              , Cmd.none
+              )
+
+        Nothing ->
+          ( { model | url = url, screen = NotFound }
+          , Cmd.none
+          )
 
     HomeMsg homeMsg ->
       case model.screen of

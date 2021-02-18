@@ -1,4 +1,4 @@
-module Screen.Home exposing (Model, init, Msg, update, view)
+module Screen.Home exposing (Model, init, withParams, Msg, update, view)
 
 
 import Api
@@ -38,6 +38,26 @@ init key homeParams =
     }
   , Api.fetchProjects GotProjects
   )
+
+
+withParams : Route.HomeParams -> Model -> Model
+withParams homeParams model =
+  let
+    query =
+      Maybe.withDefault "" homeParams.query
+
+    pageNumber =
+      Maybe.withDefault 1 homeParams.pageNumber
+  in
+  { model
+  | query = query
+  , pageNumber = pageNumber
+  , remoteData =
+      RemoteData.map
+        (Pager.searchFor query >> Pager.goto pageNumber)
+        model.remoteData
+
+  }
 
 
 -- UPDATE
