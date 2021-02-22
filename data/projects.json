@@ -1,4 +1,10 @@
 [
+  { "name": "Equilibrium",
+    "previewImageUrl": "data/images/equilibrium.png",
+    "primaryUrl": "https://code.gampleman.eu/equilibrium/equilibrium.html",
+    "repositoryUrl": "https://github.com/gampleman/equilibrium",
+    "description": "A geometric action puzzler about keeping balance with nature."
+  },
   { "name": "League Tables",
     "previewImageUrl": "data/images/league-tables.png",
     "primaryUrl": "https://se-polo-2019.netlify.app/",
