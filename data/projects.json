@@ -178,7 +178,7 @@
   {
     "name": "XKCD Comic Browser",
     "previewImageUrl": "data/images/xkcd-browser.png",
-    "primaryUrl": "https://vishaltelangre.com/xkcd",
+    "primaryUrl": "https://xkcd.vishaltelangre.com/",
     "repositoryUrl": "https://github.com/vishaltelangre/elm-xkcd-browser",
     "description": "Yet another XKCD comic browser implemented in Elm!"
   },
