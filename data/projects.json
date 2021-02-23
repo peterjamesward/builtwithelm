@@ -1,4 +1,10 @@
 [
+  { "name": "Microbial Life",
+    "previewImageUrl": "data/images/microbial-life.png",
+    "primaryUrl": "https://jxxcarlson.github.io/app/microbial-life/index.html",
+    "repositoryUrl": "https://github.com/jxxcarlson/elm-microbialLife",
+    "description": "Simulate the ecosystem of fake microbial organisms."
+  },
   { "name": "Equilibrium",
     "previewImageUrl": "data/images/equilibrium.png",
     "primaryUrl": "https://code.gampleman.eu/equilibrium/equilibrium.html",
