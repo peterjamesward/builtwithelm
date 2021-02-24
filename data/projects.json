@@ -1,4 +1,22 @@
 [
+  { "name": "cnsr.lol",
+    "previewImageUrl": "data/images/cnsr-lol.png",
+    "primaryUrl": "https://cnsr.lol",
+    "repositoryUrl": null,
+    "description": "Replace characters with similar looking ones. This can be used to get fancy fonts in social media posts or to circumvent automated censorship."
+  },
+  { "name": "Microbial Life",
+    "previewImageUrl": "data/images/microbial-life.png",
+    "primaryUrl": "https://jxxcarlson.github.io/app/microbial-life/index.html",
+    "repositoryUrl": "https://github.com/jxxcarlson/elm-microbialLife",
+    "description": "Simulate the ecosystem of fake microbial organisms."
+  },
+  { "name": "Equilibrium",
+    "previewImageUrl": "data/images/equilibrium.png",
+    "primaryUrl": "https://code.gampleman.eu/equilibrium/equilibrium.html",
+    "repositoryUrl": "https://github.com/gampleman/equilibrium",
+    "description": "A geometric action puzzler about keeping balance with nature."
+  },
   { "name": "League Tables",
     "previewImageUrl": "data/images/league-tables.png",
     "primaryUrl": "https://se-polo-2019.netlify.app/",
@@ -178,7 +196,7 @@
   {
     "name": "XKCD Comic Browser",
     "previewImageUrl": "data/images/xkcd-browser.png",
-    "primaryUrl": "https://vishaltelangre.com/xkcd",
+    "primaryUrl": "https://xkcd.vishaltelangre.com/",
     "repositoryUrl": "https://github.com/vishaltelangre/elm-xkcd-browser",
     "description": "Yet another XKCD comic browser implemented in Elm!"
   },
