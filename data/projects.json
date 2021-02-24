@@ -1,4 +1,10 @@
 [
+  { "name": "cnsr.lol",
+    "previewImageUrl": "data/images/cnsr-lol.png",
+    "primaryUrl": "https://cnsr.lol",
+    "repositoryUrl": null,
+    "description": "Replace characters with similar looking ones. This can be used to get fancy fonts in social media posts or to circumvent automated censorship."
+  },
   { "name": "Microbial Life",
     "previewImageUrl": "data/images/microbial-life.png",
     "primaryUrl": "https://jxxcarlson.github.io/app/microbial-life/index.html",
