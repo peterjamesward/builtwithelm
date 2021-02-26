@@ -1,4 +1,10 @@
 [
+  { "name": "GPXmagic",
+    "previewImageUrl": "data/images/GPXmagic.png",
+    "primaryUrl": "http://stepwiserefinement.co.uk/GPXmagic/index.html",
+    "repositoryUrl": "https://github.com/peterjamesward/GPXviz",
+    "description": "Visualize and edit GPX cycle routes."
+  },
   { "name": "Chain Home",
     "previewImageUrl": "data/images/ChainHome.png",
     "primaryUrl": "https://storage.googleapis.com/chainhome/index.html",
