@@ -1,4 +1,10 @@
 [
+  { "name": "Chain Home",
+    "previewImageUrl": "data/images/ChainHome.png",
+    "primaryUrl": "https://storage.googleapis.com/chainhome/index.html",
+    "repositoryUrl": null,
+    "description": "Shows the challenges facing an operator at a Chain Home station during the Battle of Britain in 1940."
+  },
   { "name": "cnsr.lol",
     "previewImageUrl": "data/images/cnsr-lol.png",
     "primaryUrl": "https://cnsr.lol",
